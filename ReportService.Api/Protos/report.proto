@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+option csharp_namespace = "ReportService.Api";
+
+package report;
+
+service ReportSubmitter {
+  rpc SubmitReport (ReportRequest) returns (ReportResponse);
+}
+
+message ReportRequest {
+  string word_file_url = 1;
+  Metadata metadata = 2;
+}
+
+message Metadata {
+  string request_time = 1;
+  string author = 2;
+  repeated string referenced_files = 3;
+}
+
+message ReportResponse {
+  bool success = 1;
+  string message = 2;
+}
