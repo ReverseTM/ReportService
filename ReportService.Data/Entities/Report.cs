@@ -1,6 +1,6 @@
 ﻿namespace ReportService.Data.Entities;
 
-public class Report
+public class ReportEntity
 {
     public long Id { get; set; }
     
@@ -12,5 +12,5 @@ public class Report
     
     public string ReferencedFiles { get; set; }
     
-    public Author Author { get; set; }
+    public AuthorEntity Author { get; set; }
 }

@@ -1,6 +1,6 @@
 ﻿namespace ReportService.Data.Entities;
 
-public class Author
+public class AuthorEntity
 {
     public long Id { get; set; }
     
@@ -10,5 +10,5 @@ public class Author
     
     public string Email { get; set; }
     
-    public ICollection<Report> Reports { get; set; }
+    public ICollection<ReportEntity> Reports { get; set; }
 }
