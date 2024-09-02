@@ -14,10 +14,12 @@ builder.Services.AddDbContext<ApplicationDbContext>(
     options =>
     {
         options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"));
+        
     }
 );
 
-builder.Services.AddScoped<IRepository<Report>, ReportRepository>();
+builder.Services.AddScoped<IReportRepository<ReportEntity>, ReportRepository>();
+builder.Services.AddScoped<IAuthorRepository<AuthorEntity>, AuthorRepository>();
 
 var app = builder.Build();
 
