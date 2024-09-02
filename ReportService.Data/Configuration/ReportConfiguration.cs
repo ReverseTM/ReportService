@@ -4,9 +4,9 @@ using ReportService.Data.Entities;
 
 namespace ReportService.Data.Configuration;
 
-public class ReportConfiguration : IEntityTypeConfiguration<Report>
+public class ReportConfiguration : IEntityTypeConfiguration<ReportEntity>
 {
-    public void Configure(EntityTypeBuilder<Report> builder)
+    public void Configure(EntityTypeBuilder<ReportEntity> builder)
     {
         builder
             .ToTable("reports")

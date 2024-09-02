@@ -4,9 +4,9 @@ using ReportService.Data.Entities;
 
 namespace ReportService.Data.Configuration;
 
-public class AuthorConfiguration : IEntityTypeConfiguration<Author>
+public class AuthorConfiguration : IEntityTypeConfiguration<AuthorEntity>
 {
-    public void Configure(EntityTypeBuilder<Author> builder)
+    public void Configure(EntityTypeBuilder<AuthorEntity> builder)
     {
         builder
             .ToTable("authors")

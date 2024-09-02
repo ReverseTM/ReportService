@@ -5,7 +5,7 @@ using ReportService.Data.Interfaces;
 
 namespace ReportService.Data.Repositories;
 
-public class ReportRepository : IRepository<Report>
+public class ReportRepository : IReportRepository<ReportEntity>
 {
     private readonly ApplicationDbContext _context;
 
@@ -14,27 +14,34 @@ public class ReportRepository : IRepository<Report>
         _context = context ?? throw new ArgumentNullException(nameof(context));
     }
     
-    public async Task<Report?> GetById(long id)
+    public async Task<ReportEntity?> GetById(long id)
     { 
         return await _context.Reports
             .AsNoTracking()
             .FirstOrDefaultAsync(r => r.Id == id);
     }
 
-    public async Task<IEnumerable<Report>> GetAll()
+    public async Task<ReportEntity?> GetByUrl(string url)
+    {
+        return await _context.Reports
+            .AsNoTracking()
+            .SingleOrDefaultAsync(r => r.WordFileUrl == url);
+    }
+    
+    public async Task<IEnumerable<ReportEntity>> GetAll()
     {
         return await _context.Reports
             .AsNoTracking()
             .ToListAsync();
     }
 
-    public async Task Add(Report entity)
+    public async Task Add(ReportEntity entity)
     {
         await _context.Reports.AddAsync(entity);
         await _context.SaveChangesAsync();
     }
 
-    public async Task Update(Report entity)
+    public async Task Update(ReportEntity entity)
     {
         _context.Reports.Update(entity);
         await _context.SaveChangesAsync();
