@@ -1,9 +1,12 @@
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
-using ReportService.Api.Services;
+
+using ReportService.GrpcService.Services;
 using ReportService.Data.DbContexts;
 using ReportService.Data.Entities;
 using ReportService.Data.Interfaces;
 using ReportService.Data.Repositories;
+using ReportService.Proto.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -17,9 +20,12 @@ builder.Services.AddDbContext<ApplicationDbContext>(
         
     }
 );
+builder.Services.AddTransient<DbContextFactory>();
 
-builder.Services.AddScoped<IReportRepository<ReportEntity>, ReportRepository>();
-builder.Services.AddScoped<IAuthorRepository<AuthorEntity>, AuthorRepository>();
+builder.Services.AddValidatorsFromAssemblyContaining<ReportRequestValidator>();
+
+builder.Services.AddScoped<IRepository<ReportEntity>, ReportRepository>();
+builder.Services.AddScoped<IRepository<AuthorEntity>, AuthorRepository>();
 
 var app = builder.Build();
 
