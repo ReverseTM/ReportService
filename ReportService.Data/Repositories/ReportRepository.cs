@@ -5,56 +5,100 @@ using ReportService.Data.Interfaces;
 
 namespace ReportService.Data.Repositories;
 
-public class ReportRepository : IReportRepository<ReportEntity>
+/// <summary>
+/// Repository for managing <see cref="ReportEntity"/> entities.
+/// Provides methods for adding, updating, deleting, and retrieving authors from the database.
+/// </summary>
+public sealed class ReportRepository : IRepository<ReportEntity>
 {
-    private readonly ApplicationDbContext _context;
+    private readonly DbContextFactory _factory;
 
-    public ReportRepository(ApplicationDbContext context)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ReportRepository"/> class with the specified <see cref="DbContextFactory"/>.
+    /// </summary>
+    /// <param name="factory">The factory used to create instances of the <see cref="ApplicationDbContext"/>.</param>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="factory"/> is null.</exception>
+    public ReportRepository(
+        DbContextFactory factory)
     {
-        _context = context ?? throw new ArgumentNullException(nameof(context));
+        _factory = factory ?? throw new ArgumentNullException(nameof(factory));
     }
     
-    public async Task<ReportEntity?> GetById(long id)
+    /// <inheritdoc cref="IRepository{T}.Get" />
+    public async Task<ReportEntity> Get(
+        ReportEntity reportEntity)
     { 
-        return await _context.Reports
+        await using var context = _factory.Create();
+        
+        var report = await context.Reports
             .AsNoTracking()
-            .FirstOrDefaultAsync(r => r.Id == id);
-    }
+            .FirstOrDefaultAsync(r => r.Equals(reportEntity));
 
-    public async Task<ReportEntity?> GetByUrl(string url)
-    {
-        return await _context.Reports
-            .AsNoTracking()
-            .SingleOrDefaultAsync(r => r.WordFileUrl == url);
+        if (report == null)
+        {
+            throw new KeyNotFoundException($"The report with id {reportEntity.Id} was not found.");
+        }
+        
+        return report;
     }
     
+    /// <inheritdoc cref="IRepository{T}.GetAll" />
     public async Task<IEnumerable<ReportEntity>> GetAll()
     {
-        return await _context.Reports
+        await using var context = _factory.Create();
+        
+        return await context.Reports
             .AsNoTracking()
             .ToListAsync();
     }
 
-    public async Task Add(ReportEntity entity)
+    /// <inheritdoc cref="IRepository{T}.Add" />
+    public async Task Add(
+        ReportEntity entity)
     {
-        await _context.Reports.AddAsync(entity);
-        await _context.SaveChangesAsync();
+        await using var context = _factory.Create();
+        
+        await context.Reports.AddAsync(entity);
+        await context.SaveChangesAsync();
     }
 
-    public async Task Update(ReportEntity entity)
+    /// <inheritdoc cref="IRepository{T}.AddRange" />
+    public async Task AddRange(
+        IEnumerable<ReportEntity> reportEntities)
     {
-        _context.Reports.Update(entity);
-        await _context.SaveChangesAsync();
+        await using var context = _factory.Create();
+        
+        await context.Reports.AddRangeAsync(reportEntities);
+        await context.SaveChangesAsync();
     }
 
-    public async Task Delete(long id)
+    /// <inheritdoc cref="IRepository{T}.Update" />
+    public async Task Update(
+        ReportEntity reportEntity)
     {
-        var report = await _context.Reports.FindAsync(id);
+        await using var context = _factory.Create();
+        
+        await context.Reports
+            .Where(r => r.Id == reportEntity.Id)
+            .ExecuteUpdateAsync(e => e
+                .SetProperty(r => r.AuthorId, reportEntity.AuthorId)
+                .SetProperty(r => r.RequestTime, reportEntity.RequestTime)
+                .SetProperty(r => r.WordFileUrl, reportEntity.WordFileUrl)
+                .SetProperty(r => r.ReferencedFiles, reportEntity.ReferencedFiles));
+        await context.SaveChangesAsync();
+    }
+
+    /// <inheritdoc cref="IRepository{T}.Delete" />
+    public async Task Delete(
+        ReportEntity reportEntity)
+    {
+        await using var context = _factory.Create();
+        var report = await context.Reports.FindAsync(reportEntity.Id);
 
         if (report != null)
         {
-            _context.Reports.Remove(report);
-            await _context.SaveChangesAsync();
+            context.Reports.Remove(report);
+            await context.SaveChangesAsync();
         }
     }
 }
