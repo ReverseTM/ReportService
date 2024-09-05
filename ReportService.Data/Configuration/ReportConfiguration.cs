@@ -4,9 +4,14 @@ using ReportService.Data.Entities;
 
 namespace ReportService.Data.Configuration;
 
-public class ReportConfiguration : IEntityTypeConfiguration<ReportEntity>
+/// <summary>
+/// Configures the <see cref="ReportEntity"/> entity in the Entity Framework model.
+/// </summary>
+public sealed class ReportConfiguration : IEntityTypeConfiguration<ReportEntity>
 {
-    public void Configure(EntityTypeBuilder<ReportEntity> builder)
+    /// <inheritdoc cref="Microsoft.EntityFrameworkCore.IEntityTypeConfiguration.Configure" />
+    public void Configure(
+        EntityTypeBuilder<ReportEntity> builder)
     {
         builder
             .ToTable("reports")

@@ -4,9 +4,14 @@ using ReportService.Data.Entities;
 
 namespace ReportService.Data.Configuration;
 
-public class AuthorConfiguration : IEntityTypeConfiguration<AuthorEntity>
+/// <summary>
+/// Configures the <see cref="AuthorEntity"/> entity in the Entity Framework model.
+/// </summary>
+public sealed class AuthorConfiguration : IEntityTypeConfiguration<AuthorEntity>
 {
-    public void Configure(EntityTypeBuilder<AuthorEntity> builder)
+    /// <inheritdoc cref="Microsoft.EntityFrameworkCore.IEntityTypeConfiguration{T}.Configure" />
+    public void Configure(
+        EntityTypeBuilder<AuthorEntity> builder)
     {
         builder
             .ToTable("authors")
